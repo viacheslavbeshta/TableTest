@@ -11,10 +11,10 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   List<Employee> employees = <Employee>[];
   late EmployeeDataSource employeeDataSource;
 
@@ -23,6 +23,12 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     employees = getEmployeeData();
     employeeDataSource = EmployeeDataSource(employees);
+  }
+
+  @override
+  void didChangeDependencies() {
+    employeeDataSource = EmployeeDataSource(employees);
+    super.didChangeDependencies();
   }
 
   var showDiff = true;
@@ -54,177 +60,178 @@ class _MyHomePageState extends State<MyHomePage> {
                 PointerDeviceKind.touch,
                 PointerDeviceKind.mouse,
               }, physics: const ScrollPhysics().applyTo(const ClampingScrollPhysics())),
-              child: SfDataGrid(
-                navigationMode: GridNavigationMode.cell,
-                allowEditing: true,
-                editingGestureType: EditingGestureType.doubleTap,
-                selectionMode: SelectionMode.single,
-                source: employeeDataSource,
-                columnWidthMode: ColumnWidthMode.none,
-                frozenColumnsCount: 1,
-                isScrollbarAlwaysShown: true,
-                defaultColumnWidth: 150,
-                gridLinesVisibility: GridLinesVisibility.both,
-                headerGridLinesVisibility: GridLinesVisibility.both,
-                stackedHeaderRows: <StackedHeaderRow>[
-                  StackedHeaderRow(cells: [
-                    StackedHeaderCell(
-                      columnNames: ['name', 'designation', 'salary'],
-                      child: Container(
-                        color: const Color(0xFFF1F1F1),
-                        child: const Center(
-                          child: Text('January'),
+              child: Builder(builder: (context) {
+                return SfDataGrid(
+                  navigationMode: GridNavigationMode.cell,
+                  allowEditing: true,
+                  editingGestureType: EditingGestureType.doubleTap,
+                  selectionMode: SelectionMode.single,
+                  source: employeeDataSource,
+                  columnWidthMode: ColumnWidthMode.none,
+                  frozenColumnsCount: 1,
+                  isScrollbarAlwaysShown: true,
+                  defaultColumnWidth: 150,
+                  gridLinesVisibility: GridLinesVisibility.both,
+                  headerGridLinesVisibility: GridLinesVisibility.both,
+                  stackedHeaderRows: <StackedHeaderRow>[
+                    StackedHeaderRow(cells: [
+                      StackedHeaderCell(
+                        columnNames: ['name', 'designation', 'salary'],
+                        child: Container(
+                          color: const Color(0xFFF1F1F1),
+                          child: const Center(
+                            child: Text('January'),
+                          ),
                         ),
                       ),
-                    ),
-                    StackedHeaderCell(
-                      columnNames: ['name1', 'designation1', 'salary1'],
-                      child: Container(
-                        color: const Color(0xFFF1F1F1),
-                        child: const Center(
-                          child: Text('February'),
+                      StackedHeaderCell(
+                        columnNames: ['name1', 'designation1', 'salary1'],
+                        child: Container(
+                          color: const Color(0xFFF1F1F1),
+                          child: const Center(
+                            child: Text('February'),
+                          ),
                         ),
                       ),
-                    ),
-                    StackedHeaderCell(
-                      columnNames: ['name2', 'designation2', 'salary2'],
-                      child: Container(
-                        color: const Color(0xFFF1F1F1),
-                        child: const Center(
-                          child: Text('March'),
+                      StackedHeaderCell(
+                        columnNames: ['name2', 'designation2', 'salary2'],
+                        child: Container(
+                          color: const Color(0xFFF1F1F1),
+                          child: const Center(
+                            child: Text('March'),
+                          ),
                         ),
                       ),
-                    ),
-                  ])
-                ],
-                columns: <GridColumn>[
-                  GridColumn(
-                      columnName: 'id',
+                    ])
+                  ],
+                  columns: <GridColumn>[
+                    GridColumn(
+                        allowEditing: false,
+                        columnName: 'id',
+                        label: Container(
+                            padding: const EdgeInsets.all(16.0),
+                            alignment: Alignment.center,
+                            child: const Text(
+                              'CATEGORY',
+                            ))),
+                    GridColumn(
+                      visible: showBudget,
+                      columnName: 'name',
                       label: Container(
-                          padding: const EdgeInsets.all(16.0),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'CATEGORY',
-                          ))),
-                  GridColumn(
-                    visible: showBudget,
-                    columnName: 'name',
-                    label: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: const Text('BUDGET'),
-                    ),
-                  ),
-                  GridColumn(
-                    visible: showActual,
-                    columnName: 'designation',
-                    label: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        'ACTUAL',
-                        overflow: TextOverflow.ellipsis,
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text('BUDGET'),
                       ),
                     ),
-                  ),
-                  GridColumn(
-                    visible: showDiff,
-                    columnName: 'salary',
-                    label: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: const Text('DIFFERENCE'),
-                    ),
-                  ),
-                  GridColumn(
-                    visible: showBudget,
-                    columnName: 'name1',
-                    label: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: const Text('BUDGET'),
-                    ),
-                  ),
-                  GridColumn(
-                    visible: showActual,
-                    columnName: 'designation1',
-                    label: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        'ACTUAL',
-                        overflow: TextOverflow.ellipsis,
+                    GridColumn(
+                      visible: showActual,
+                      columnName: 'designation',
+                      label: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'ACTUAL',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
-                  ),
-                  GridColumn(
-                    visible: showDiff,
-                    columnName: 'salary1',
-                    label: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: const Text('DIFFERENCE'),
-                    ),
-                  ),
-                  GridColumn(
-                    visible: showBudget,
-                    columnName: 'name2',
-                    label: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: const Text('BUDGET'),
-                    ),
-                  ),
-                  GridColumn(
-                    visible: showActual,
-                    columnName: 'designation2',
-                    label: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        'ACTUAL',
-                        overflow: TextOverflow.ellipsis,
+                    GridColumn(
+                      visible: showDiff,
+                      columnName: 'salary',
+                      label: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text('DIFFERENCE'),
                       ),
                     ),
-                  ),
-                  GridColumn(
-                    visible: showDiff,
-                    columnName: 'salary2',
-                    label: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: const Text('DIFFERENCE'),
+                    GridColumn(
+                      visible: showBudget,
+                      columnName: 'name1',
+                      label: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text('BUDGET'),
+                      ),
                     ),
-                  ),
-                  GridColumn(
-                    columnName: 'YEAR',
-                    label: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: const Text('YEAR'),
+                    GridColumn(
+                      visible: showActual,
+                      columnName: 'designation1',
+                      label: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'ACTUAL',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ),
-                  ),
-                  GridColumn(
-                    columnName: '%',
-                    label: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      alignment: Alignment.center,
-                      child: const Text('%'),
+                    GridColumn(
+                      visible: showDiff,
+                      columnName: 'salary1',
+                      label: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text('DIFFERENCE'),
+                      ),
                     ),
-                  ),
-                ],
-                onCellTap: (DataGridCellTapDetails details) {
-                  print(details.column.columnName);
-                  print(details.column.label);
-                  print(details.rowColumnIndex);
-                  print(details.kind);
-                },
-                // onCellDoubleTap: (DataGridCellDoubleTapDetails details){
-                //   if(details.column.columnName=='id') {
-                //    employeeDataSource.rows.removeAt(details.rowColumnIndex.rowIndex);
-                //   }
-                // },
-              ),
+                    GridColumn(
+                      visible: showBudget,
+                      columnName: 'name2',
+                      label: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text('BUDGET'),
+                      ),
+                    ),
+                    GridColumn(
+                      visible: showActual,
+                      columnName: 'designation2',
+                      label: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'ACTUAL',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    GridColumn(
+                      visible: showDiff,
+                      columnName: 'salary2',
+                      label: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text('DIFFERENCE'),
+                      ),
+                    ),
+                    GridColumn(
+                      columnName: 'YEAR',
+                      label: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text('YEAR'),
+                      ),
+                    ),
+                    GridColumn(
+                      columnName: '%',
+                      label: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text('%'),
+                      ),
+                    ),
+                  ],
+                  onCellTap: (DataGridCellTapDetails details) {
+                    print(details.column.columnName);
+                    print(details.column.label);
+                    print(details.rowColumnIndex);
+                    print(details.kind);
+                    employeeDataSource.isCategoryShown = !employeeDataSource.isCategoryShown;
+                    employeeDataSource.updateDataGridSource();
+                    //rows == widgets
+                  },
+                );
+              }),
             ),
           ),
         ],

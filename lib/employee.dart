@@ -16,8 +16,8 @@ class Employee {
   int salary;
 
   DataGridRow getDataGridRow() => DataGridRow(cells: [
-      DataGridCell<String>(columnName: 'id', value: 'CATEGORY $id'),
-      DataGridCell<int>(columnName: 'name', value: salary),
+      DataGridCell<String>(columnName: 'id', value: 'CATEGORY $id'),//TODO: category column
+      DataGridCell<int>(columnName: 'name', value: salary),//TODO: redo names for better reading
       DataGridCell<int>(columnName: 'designation', value: salary),
       DataGridCell<int>(columnName: 'salary', value: salary),
       DataGridCell<int>(columnName: 'name1', value: salary),

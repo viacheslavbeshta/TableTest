@@ -6,13 +6,12 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'employee.dart';
 
 class EmployeeDataSource extends DataGridSource {
-  EmployeeDataSource(this._employees) {
-    dataGridRows = _employees.map<DataGridRow>((dataGridRow) => dataGridRow.getDataGridRow()).toList();
-  }
+  EmployeeDataSource(this._employees);
 
-  List<Employee> _employees = [];
+  final List<Employee> _employees;
 
-  List<DataGridRow> dataGridRows = [];
+  late List<DataGridRow> dataGridRows =
+      _employees.map<DataGridRow>((dataGridRow) => dataGridRow.getDataGridRow()).toList();
 
   /// Helps to hold the new value of all editable widget.
   /// Based on the new value we will commit the new value into the corresponding
@@ -24,31 +23,47 @@ class EmployeeDataSource extends DataGridSource {
 
   @override
   List<DataGridRow> get rows => dataGridRows;
-
+  bool isCategoryShown = true;
   void updateDataGridSource() => notifyListeners();
 
   @override
-  DataGridRowAdapter? buildRow(DataGridRow row) {
-    return DataGridRowAdapter(
-        cells: row.getCells().map<Widget>((dataGridCell) {
-      if (dataGridCell.columnName == 'id') {
-        return GestureDetector(
-            onDoubleTap: () {
-              dataGridRows.remove(row);
+  DataGridRowAdapter buildRow(DataGridRow row) {
+    final cells = <Widget>[];
+    final list = row.getCells();
+
+    for (var i = 0; i < list.length; i++) {
+      final dataGridCell = list[i];
+      if (dataGridRows.indexOf(row) == 0 && dataGridCell.columnName == 'id') {
+        //todo: row index
+        cells.add(
+          ToggleCell(
+            value: dataGridCell.value.toString(),
+            onCheckboxToggled: (value) {
+              isCategoryShown = !isCategoryShown;
               updateDataGridSource();
             },
-            child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0), child: Text(dataGridCell.value.toString())));
-      } else {
-        return Container(
-            alignment: (dataGridCell.columnName == 'id') ? Alignment.centerRight : Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              dataGridCell.value.toString(),
-              overflow: TextOverflow.ellipsis,
-            ));
+          ),
+        );
+        continue;
       }
-    }).toList());
+      if (!isCategoryShown) {
+        cells.add(SizedBox());
+        continue;
+      }
+      if (dataGridCell.columnName == 'id') {
+        cells.add(CategoryCell(
+          value: dataGridCell.value.toString(),
+          onDoubleTap: () {
+            dataGridRows.remove(row);
+            updateDataGridSource();
+          },
+        ));
+        continue;
+      }
+      cells.add(PreviewCell(value: dataGridCell.value.toString()));
+    }
+
+    return DataGridRowAdapter(cells: cells);
   }
 
   @override
@@ -141,5 +156,71 @@ class EmployeeDataSource extends DataGridSource {
 
   RegExp _getRegExp(bool isNumericKeyBoard, String columnName) {
     return isNumericKeyBoard ? RegExp('[0-9]') : RegExp('[a-zA-Z ]');
+  }
+}
+
+class CategoryCell extends StatelessWidget {
+  const CategoryCell({Key? key, required this.value, required this.onDoubleTap}) : super(key: key);
+
+  final VoidCallback onDoubleTap;
+
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onDoubleTap: onDoubleTap,
+      child: Container(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: Text(value)),
+    );
+  }
+}
+
+class PreviewCell extends StatelessWidget {
+  const PreviewCell({Key? key, required this.value}) : super(key: key);
+
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Text(
+          value,
+          overflow: TextOverflow.ellipsis,
+        ));
+  }
+}
+
+class ToggleCell extends StatefulWidget {
+  const ToggleCell({Key? key, this.onCheckboxToggled, required this.value}) : super(key: key);
+  final Function? onCheckboxToggled;
+  final String value;
+  @override
+  State<ToggleCell> createState() => _ToggleCellState();
+}
+
+class _ToggleCellState extends State<ToggleCell> {
+  var isChecked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(color: Colors.cyanAccent),
+      child: Padding(
+        padding: const EdgeInsets.only(right: 8.0),
+        child: Row(
+          children: [
+            Text('${widget.value} - isChecked $isChecked'),
+            GestureDetector(
+              onTap: () => setState(() {
+                isChecked = !isChecked;
+                widget.onCheckboxToggled!(isChecked);
+              }),
+              child: isChecked ? Icon(Icons.expand_circle_down) : Icon(Icons.unfold_less_sharp),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
