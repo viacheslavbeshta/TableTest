@@ -1,32 +1,27 @@
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import 'package:tabletest/table_screen.dart';
 
 class Employee {
-  Employee(this.id, this.name, this.designation, this.salary);
+  Employee(this.id, this.salary);
 
   ///
   final int id;
 
   ///
-  String name;
-
-  ///
-  String designation;
-
-  ///
   int salary;
 
   DataGridRow getDataGridRow() => DataGridRow(cells: [
-      DataGridCell<String>(columnName: 'id', value: 'CATEGORY $id'),//TODO: category column
-      DataGridCell<int>(columnName: 'name', value: salary),//TODO: redo names for better reading
-      DataGridCell<int>(columnName: 'designation', value: salary),
-      DataGridCell<int>(columnName: 'salary', value: salary),
-      DataGridCell<int>(columnName: 'name1', value: salary),
-      DataGridCell<int>(columnName: 'designation1', value: salary),
-      DataGridCell<int>(columnName: 'salary1', value: salary),
-      DataGridCell<int>(columnName: 'name2', value: salary),
-      DataGridCell<int>(columnName: 'designation2', value: salary),
-      DataGridCell<int>(columnName: 'salary2', value: salary),
-      DataGridCell<int>(columnName: 'YEAR', value: id),
-      DataGridCell<int>(columnName: '%', value: id),
-    ]);
+        DataGridCell<String>(columnName: 'category', value: 'CATEGORY $id'),
+        DataGridCell<int>(columnName: jbKey, value: salary),
+        DataGridCell<int>(columnName: jaKey, value: salary),
+        DataGridCell<int>(columnName: jdKey, value: salary),
+        DataGridCell<int>(columnName: fbKey, value: salary),
+        DataGridCell<int>(columnName: faKey, value: salary),
+        DataGridCell<int>(columnName: fdKey, value: salary),
+        DataGridCell<int>(columnName: mbKey, value: salary),
+        DataGridCell<int>(columnName: maKey, value: salary),
+        DataGridCell<int>(columnName: mdKey, value: salary),
+        DataGridCell<int>(columnName: 'YEAR', value: id),
+        DataGridCell<int>(columnName: '%', value: id),
+      ]);
 }

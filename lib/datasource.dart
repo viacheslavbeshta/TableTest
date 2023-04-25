@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import 'cell_widgets.dart';
 import 'employee.dart';
 
 class EmployeeDataSource extends DataGridSource {
@@ -10,8 +11,7 @@ class EmployeeDataSource extends DataGridSource {
 
   final List<Employee> _employees;
 
-  late List<DataGridRow> dataGridRows =
-      _employees.map<DataGridRow>((dataGridRow) => dataGridRow.getDataGridRow()).toList();
+  late final dataGridRows = _employees.map<DataGridRow>((dataGridRow) => dataGridRow.getDataGridRow()).toList();//todo: transform into DataGridRow in [rows]
 
   /// Helps to hold the new value of all editable widget.
   /// Based on the new value we will commit the new value into the corresponding
@@ -22,8 +22,19 @@ class EmployeeDataSource extends DataGridSource {
   TextEditingController editingController = TextEditingController();
 
   @override
-  List<DataGridRow> get rows => dataGridRows;
-  bool isCategoryShown = true;
+  List<DataGridRow> get rows {
+    List<DataGridRow> dataRows = [];
+
+    if (!isFirstCategoryShown) {
+      print('rows');
+      dataRows.add(dataGridRows.first);
+    }
+
+    return dataRows.isNotEmpty ? dataRows : dataGridRows;
+  }
+
+  bool isFirstCategoryShown = true;
+  bool isSecondCategoryShown = true;
   void updateDataGridSource() => notifyListeners();
 
   @override
@@ -33,24 +44,21 @@ class EmployeeDataSource extends DataGridSource {
 
     for (var i = 0; i < list.length; i++) {
       final dataGridCell = list[i];
-      if (dataGridRows.indexOf(row) == 0 && dataGridCell.columnName == 'id') {
+      if (dataGridRows.indexOf(row) == 0 && dataGridCell.columnName == 'category') {
         //todo: row index
+        print('toggle');
         cells.add(
           ToggleCell(
             value: dataGridCell.value.toString(),
             onCheckboxToggled: (value) {
-              isCategoryShown = !isCategoryShown;
+              isFirstCategoryShown = !isFirstCategoryShown;
               updateDataGridSource();
             },
           ),
         );
         continue;
       }
-      if (!isCategoryShown) {
-        cells.add(SizedBox());
-        continue;
-      }
-      if (dataGridCell.columnName == 'id') {
+      if (dataGridCell.columnName == 'category') {
         cells.add(CategoryCell(
           value: dataGridCell.value.toString(),
           onDoubleTap: () {
@@ -60,6 +68,7 @@ class EmployeeDataSource extends DataGridSource {
         ));
         continue;
       }
+      print('PreviewCell');
       cells.add(PreviewCell(value: dataGridCell.value.toString()));
     }
 
@@ -156,71 +165,5 @@ class EmployeeDataSource extends DataGridSource {
 
   RegExp _getRegExp(bool isNumericKeyBoard, String columnName) {
     return isNumericKeyBoard ? RegExp('[0-9]') : RegExp('[a-zA-Z ]');
-  }
-}
-
-class CategoryCell extends StatelessWidget {
-  const CategoryCell({Key? key, required this.value, required this.onDoubleTap}) : super(key: key);
-
-  final VoidCallback onDoubleTap;
-
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onDoubleTap: onDoubleTap,
-      child: Container(padding: const EdgeInsets.symmetric(horizontal: 16.0), child: Text(value)),
-    );
-  }
-}
-
-class PreviewCell extends StatelessWidget {
-  const PreviewCell({Key? key, required this.value}) : super(key: key);
-
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Text(
-          value,
-          overflow: TextOverflow.ellipsis,
-        ));
-  }
-}
-
-class ToggleCell extends StatefulWidget {
-  const ToggleCell({Key? key, this.onCheckboxToggled, required this.value}) : super(key: key);
-  final Function? onCheckboxToggled;
-  final String value;
-  @override
-  State<ToggleCell> createState() => _ToggleCellState();
-}
-
-class _ToggleCellState extends State<ToggleCell> {
-  var isChecked = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(color: Colors.cyanAccent),
-      child: Padding(
-        padding: const EdgeInsets.only(right: 8.0),
-        child: Row(
-          children: [
-            Text('${widget.value} - isChecked $isChecked'),
-            GestureDetector(
-              onTap: () => setState(() {
-                isChecked = !isChecked;
-                widget.onCheckboxToggled!(isChecked);
-              }),
-              child: isChecked ? Icon(Icons.expand_circle_down) : Icon(Icons.unfold_less_sharp),
-            )
-          ],
-        ),
-      ),
-    );
   }
 }

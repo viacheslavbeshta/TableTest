@@ -6,6 +6,18 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'datasource.dart';
 import 'employee.dart';
 
+const jbKey = 'januaryBudget';
+const jaKey = 'januaryActual';
+const jdKey = 'januaryDifference';
+
+const fbKey = 'februaryBudget';
+const faKey = 'februaryActual';
+const fdKey = 'februaryDifference';
+
+const mbKey = 'marchBudget';
+const maKey = 'marchActual';
+const mdKey = 'marchDifference';
+
 class MyHomePage extends StatefulWidget {
   /// Creates the home page.
   const MyHomePage({Key? key}) : super(key: key);
@@ -76,7 +88,7 @@ class MyHomePageState extends State<MyHomePage> {
                   stackedHeaderRows: <StackedHeaderRow>[
                     StackedHeaderRow(cells: [
                       StackedHeaderCell(
-                        columnNames: ['name', 'designation', 'salary'],
+                        columnNames: [jbKey, jaKey, jdKey],
                         child: Container(
                           color: const Color(0xFFF1F1F1),
                           child: const Center(
@@ -85,7 +97,7 @@ class MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                       StackedHeaderCell(
-                        columnNames: ['name1', 'designation1', 'salary1'],
+                        columnNames: [fbKey, faKey, fdKey],
                         child: Container(
                           color: const Color(0xFFF1F1F1),
                           child: const Center(
@@ -94,7 +106,7 @@ class MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                       StackedHeaderCell(
-                        columnNames: ['name2', 'designation2', 'salary2'],
+                        columnNames: [mbKey, maKey, mdKey],
                         child: Container(
                           color: const Color(0xFFF1F1F1),
                           child: const Center(
@@ -106,17 +118,19 @@ class MyHomePageState extends State<MyHomePage> {
                   ],
                   columns: <GridColumn>[
                     GridColumn(
-                        allowEditing: false,
-                        columnName: 'id',
-                        label: Container(
-                            padding: const EdgeInsets.all(16.0),
-                            alignment: Alignment.center,
-                            child: const Text(
-                              'CATEGORY',
-                            ))),
+                      allowEditing: false,
+                      columnName: 'category',
+                      label: Container(
+                        padding: const EdgeInsets.all(16.0),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'CATEGORY',
+                        ),
+                      ),
+                    ),
                     GridColumn(
                       visible: showBudget,
-                      columnName: 'name',
+                      columnName: jbKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -125,7 +139,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                     GridColumn(
                       visible: showActual,
-                      columnName: 'designation',
+                      columnName: jaKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -137,7 +151,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                     GridColumn(
                       visible: showDiff,
-                      columnName: 'salary',
+                      columnName: jdKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -146,7 +160,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                     GridColumn(
                       visible: showBudget,
-                      columnName: 'name1',
+                      columnName: fbKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -155,7 +169,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                     GridColumn(
                       visible: showActual,
-                      columnName: 'designation1',
+                      columnName: faKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -167,7 +181,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                     GridColumn(
                       visible: showDiff,
-                      columnName: 'salary1',
+                      columnName: fdKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -176,7 +190,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                     GridColumn(
                       visible: showBudget,
-                      columnName: 'name2',
+                      columnName: mbKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -185,7 +199,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                     GridColumn(
                       visible: showActual,
-                      columnName: 'designation2',
+                      columnName: maKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -197,7 +211,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                     GridColumn(
                       visible: showDiff,
-                      columnName: 'salary2',
+                      columnName: mdKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
                         alignment: Alignment.center,
@@ -226,8 +240,14 @@ class MyHomePageState extends State<MyHomePage> {
                     print(details.column.label);
                     print(details.rowColumnIndex);
                     print(details.kind);
-                    employeeDataSource.isCategoryShown = !employeeDataSource.isCategoryShown;
-                    employeeDataSource.updateDataGridSource();
+                    if (details.rowColumnIndex.rowIndex == 0 && details.rowColumnIndex.columnIndex == 0) {
+                      employeeDataSource.isFirstCategoryShown = !employeeDataSource.isFirstCategoryShown;
+                      employeeDataSource.updateDataGridSource();
+                    }
+                    if (details.rowColumnIndex.rowIndex == 9 && details.rowColumnIndex.columnIndex == 0) {
+                      employeeDataSource.isSecondCategoryShown = !employeeDataSource.isSecondCategoryShown;
+                      employeeDataSource.updateDataGridSource();
+                    }
                     //rows == widgets
                   },
                 );
@@ -241,26 +261,26 @@ class MyHomePageState extends State<MyHomePage> {
 
   //
   List<Employee> getEmployeeData() => [
-        Employee(10001, 'James', 'Project Lead', 10000),
-        Employee(10002, 'Kathryn', 'Manager', 20000),
-        Employee(10003, 'Lara', 'Developer', 3000),
-        Employee(10004, 'Michael', 'Designer', 4000),
-        Employee(10005, 'Martin', 'Developer', 5000),
-        Employee(10006, 'Newberry', 'Developer', 6000),
-        Employee(10007, 'Balnc', 'Developer', 7000),
-        Employee(10008, 'Perry', 'Developer', 8000),
-        Employee(10009, 'Gable', 'Developer', 9000),
-        Employee(10010, 'Grimes', 'Developer', 10000),
-        Employee(10011, 'Grimes', 'Developer', 11000),
-        Employee(10012, 'James', 'Project Lead', 12000),
-        Employee(10013, 'Kathryn', 'Manager', 13000),
-        Employee(10014, 'Lara', 'Developer', 14000),
-        Employee(10015, 'Michael', 'Designer', 15000),
-        Employee(10016, 'Martin', 'Developer', 16000),
-        Employee(10017, 'Newberry', 'Developer', 17000),
-        Employee(10018, 'Balnc', 'Developer', 18000),
-        Employee(10019, 'Perry', 'Developer', 19000),
-        Employee(10020, 'Gable', 'Developer', 20000),
-        Employee(10021, 'Grimes', 'Developer', 21000),
+        Employee(10001, 10000),
+        Employee(10002, 20000),
+        Employee(10003, 3000),
+        Employee(10004, 4000),
+        Employee(10005, 5000),
+        Employee(10006, 6000),
+        Employee(10007, 7000),
+        Employee(10008, 8000),
+        Employee(10009, 9000),
+        Employee(10010, 10000),
+        Employee(10011, 11000),
+        Employee(10012, 12000),
+        Employee(10013, 13000),
+        Employee(10014, 14000),
+        Employee(10015, 15000),
+        Employee(10016, 16000),
+        Employee(10017, 17000),
+        Employee(10018, 18000),
+        Employee(10019, 19000),
+        Employee(10020, 20000),
+        Employee(10021, 21000),
       ];
 }
