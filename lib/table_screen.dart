@@ -19,7 +19,7 @@ const maKey = 'marchActual';
 const mdKey = 'marchDifference';
 
 class MyHomePage extends StatefulWidget {
-  /// Creates the home page.
+
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
@@ -27,19 +27,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
-  List<Employee> employees = <Employee>[];
-  late EmployeeDataSource employeeDataSource;
+  TableData employees = TableData([]);
+  late SFDataSource employeeDataSource;
 
   @override
   void initState() {
     super.initState();
     employees = getEmployeeData();
-    employeeDataSource = EmployeeDataSource(employees);
+    employeeDataSource = SFDataSource(employees);
   }
 
   @override
   void didChangeDependencies() {
-    employeeDataSource = EmployeeDataSource(employees);
+    employeeDataSource = SFDataSource(employees);
     super.didChangeDependencies();
   }
 
@@ -51,7 +51,7 @@ class MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Syncfusion Flutter DataGrid'),
+        title: const Text('DataGrid Sample'),
       ),
       body: Column(
         children: [
@@ -240,16 +240,13 @@ class MyHomePageState extends State<MyHomePage> {
                     print(details.column.label);
                     print(details.rowColumnIndex);
                     print(details.kind);
-                    if (details.rowColumnIndex.rowIndex == 0 && details.rowColumnIndex.columnIndex == 0) {
-                      employeeDataSource.isFirstCategoryShown = !employeeDataSource.isFirstCategoryShown;
-                      employeeDataSource.updateDataGridSource();
-                    }
-                    if (details.rowColumnIndex.rowIndex == 9 && details.rowColumnIndex.columnIndex == 0) {
-                      employeeDataSource.isSecondCategoryShown = !employeeDataSource.isSecondCategoryShown;
-                      employeeDataSource.updateDataGridSource();
-                    }
                     //rows == widgets
                   },
+                  // onCellDoubleTap: (DataGridCellDoubleTapDetails details){
+                  //   print(details.rowColumnIndex.rowIndex);
+                  //   employeeDataSource.dataGridRows.removeAt(details.rowColumnIndex.rowIndex);
+                  //   employeeDataSource.notifyListeners();
+                  // },
                 );
               }),
             ),
@@ -260,27 +257,20 @@ class MyHomePageState extends State<MyHomePage> {
   }
 
   //
-  List<Employee> getEmployeeData() => [
-        Employee(10001, 10000),
-        Employee(10002, 20000),
-        Employee(10003, 3000),
-        Employee(10004, 4000),
-        Employee(10005, 5000),
-        Employee(10006, 6000),
-        Employee(10007, 7000),
-        Employee(10008, 8000),
-        Employee(10009, 9000),
-        Employee(10010, 10000),
-        Employee(10011, 11000),
-        Employee(10012, 12000),
-        Employee(10013, 13000),
-        Employee(10014, 14000),
-        Employee(10015, 15000),
-        Employee(10016, 16000),
-        Employee(10017, 17000),
-        Employee(10018, 18000),
-        Employee(10019, 19000),
-        Employee(10020, 20000),
-        Employee(10021, 21000),
-      ];
+  TableData getEmployeeData() {
+    var monthData = MonthData(10000, 30000, 20000);
+    List<MonthData> months = List.filled(12, monthData);
+    List<Category> categories = [];
+
+    for (var i = 0; i < 5; i++) {
+      categories.add(Category(
+        months,
+        'Category $i',
+        i.toString(),
+        List.filled(10, SubCategory(months, 'subcategory', i.toString())),
+      ));
+    }
+
+    return TableData(categories);
+  }
 }
