@@ -57,21 +57,23 @@ class _ToggleCellState extends State<ToggleCell> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(color: Colors.cyanAccent),
-      child: Padding(
-        padding: const EdgeInsets.only(right: 8.0),
-        child: Row(
-          children: [
-            Text(widget.value),
-            GestureDetector(
-              onTap: () => setState(() {
-                isChecked = !isChecked;
-                widget.onCheckboxToggled!(isChecked);
-              }),
-              child: isChecked ? Icon(Icons.expand_circle_down_rounded) : Icon(Icons.arrow_circle_up_rounded),
-            )
-          ],
+    return GestureDetector(
+      onTap: () => setState(() {
+        isChecked = !isChecked;
+        widget.onCheckboxToggled!(isChecked);
+      }),
+      child: Container(
+        decoration: const BoxDecoration(color: Colors.cyanAccent),
+        child: Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: Row(
+            children: [
+              SizedBox(width: 8),
+              Icon(Icons.expand_circle_down_rounded),
+              SizedBox(width: 8),
+              Text(widget.value)
+            ],
+          ),
         ),
       ),
     );

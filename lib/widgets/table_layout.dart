@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-import 'datasource.dart';
-import 'employee.dart';
+import '../business_logic/syncfusion_datasource.dart';
+import '../data/employee.dart';
 
 const jbKey = 'januaryBudget';
 const jaKey = 'januaryActual';
@@ -242,7 +242,7 @@ class MyHomePageState extends State<MyHomePage> {
                     print(details.kind);
                     //rows == widgets
                   },
-                  // onCellDoubleTap: (DataGridCellDoubleTapDetails details){
+                  // onCellDoubleTap: (DataGridCellDoubleTapDetails details){//TODO: remove row from datasource
                   //   print(details.rowColumnIndex.rowIndex);
                   //   employeeDataSource.dataGridRows.removeAt(details.rowColumnIndex.rowIndex);
                   //   employeeDataSource.notifyListeners();

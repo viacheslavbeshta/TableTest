@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tabletest/table_screen.dart';
+import 'package:tabletest/widgets/table_layout.dart';
 
 void main() {
   runApp(const MyApp());

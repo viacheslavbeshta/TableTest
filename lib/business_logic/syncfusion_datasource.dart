@@ -2,10 +2,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
-import 'package:tabletest/table_screen.dart';
+import 'package:tabletest/widgets/table_layout.dart';
 
-import 'cell_widgets.dart';
-import 'employee.dart';
+import '../widgets/cell_widgets.dart';
+import '../data/employee.dart';
 
 class SFDataSource extends DataGridSource {
   SFDataSource(this._categoriesData);
@@ -22,7 +22,6 @@ class SFDataSource extends DataGridSource {
   /// Help to control the editable text in [TextField] widget.
   TextEditingController editingController = TextEditingController();
   List<String> unexpadedCategories = [];
-  List<String> hiddenSubcategories = [];
 
   List<DataGridRow> getDataGridRows(List<Category> categories) {
     List<DataGridRow> dataGridRows = [];
@@ -42,11 +41,14 @@ class SFDataSource extends DataGridSource {
         DataGridCell<int>(columnName: 'YEAR', value: category.yearData.first.diff),
         DataGridCell<int>(columnName: '%', value: category.yearData.first.diff ~/ 100),
       ];
+
       dataGridRows.add(DataGridRow(cells: categoryCells));
       if (unexpadedCategories.contains('CATEGORY ${category.id}')) continue;
 
       for (var sub in category.subCategories) {
-        if(hiddenSubcategories.contains('${sub.category} ${category.id}${sub.id}')) continue;
+        // if (hiddenSubcategories.contains('${sub.category} ${category.id}${sub.id}'))
+        //   continue; //TODO: remove subcategories feature 1
+
         var cells = [
           DataGridCell<String>(columnName: 'category', value: '${sub.category} ${category.id}${sub.id}'),
           DataGridCell<int>(columnName: jbKey, value: sub.yearData[0].budget),
@@ -70,8 +72,7 @@ class SFDataSource extends DataGridSource {
   @override
   List<DataGridRow> get rows => getDataGridRows(dataGridRows);
 
-  void updateDataGridSource() => notifyListeners();
-
+  ///func for building row (set widget for cell)
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
     final cells = <Widget>[];
@@ -99,16 +100,8 @@ class SFDataSource extends DataGridSource {
       if (dataGridCell.columnName == 'category') {
         cells.add(CategoryCell(
           value: dataGridCell.value.toString(),
-          onDoubleTap: () {
-            if (hiddenSubcategories.contains(list.first.value.toString())) {
-              hiddenSubcategories.remove(list.first.value.toString());
-            } else {
-              hiddenSubcategories.add(list.first.value.toString());
-            }
-            print('hiddenSubcategories');
-            print(hiddenSubcategories);
-            updateDataGridSource();
-          },
+          onDoubleTap: () {//TODO: remove subcategories feature 2
+             },
         ));
         continue;
       }
@@ -118,34 +111,35 @@ class SFDataSource extends DataGridSource {
     return DataGridRowAdapter(cells: cells);
   }
 
-  // @override
-  // Future<void> onCellSubmit(DataGridRow dataGridRow, RowColumnIndex rowColumnIndex, GridColumn column) async {
-  //   final dynamic oldValue = dataGridRow
-  //           .getCells()
-  //           .firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == column.columnName)
-  //           ?.value ??
-  //       '';
-  //
-  //   final int dataRowIndex = dataGridRows.indexOf(dataGridRow);
-  //
-  //   if (newCellValue == null || oldValue == newCellValue) {
-  //     return Future<void>.value();
-  //   }
-  //
-  //   if (column.columnName == 'name') {
-  //     dataGridRows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
-  //         DataGridCell<int>(columnName: 'name', value: newCellValue);
-  //     _employees[dataRowIndex].salary = newCellValue as int;
-  //   } else if (column.columnName == 'designation') {
-  //     dataGridRows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
-  //         DataGridCell<int>(columnName: 'designation', value: newCellValue);
-  //     _employees[dataRowIndex].salary = newCellValue as int;
-  //   } else {
-  //     dataGridRows[dataRowIndex].getCells()[rowColumnIndex.columnIndex] =
-  //         DataGridCell<int>(columnName: 'salary', value: newCellValue);
-  //     _employees[dataRowIndex].salary = newCellValue as int;
-  //   }
-  // }
+  @override
+  Future<void> onCellSubmit(DataGridRow dataGridRow, RowColumnIndex rowColumnIndex, GridColumn column) async {
+    var gridRows = getDataGridRows(dataGridRows);
+    final cells = dataGridRow.getCells();
+
+
+    final dynamic oldValue =
+        cells.firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == column.columnName)?.value ??
+            '';
+    print('old value: $oldValue');
+    // print('dataGridRow: ${dataGridRow.getCells().toString()}');
+
+    // final int dataRowIndex = gridRows.indexOf(dataGridRow);
+    // print(dataRowIndex);
+    // //TODO: index not found
+
+    if (newCellValue == null || oldValue == newCellValue) {
+      return Future<void>.value();
+    }
+
+    /// change value in cell
+    gridRows[rowColumnIndex.rowIndex].getCells()[rowColumnIndex.columnIndex] =
+        DataGridCell<int>(columnName: column.columnName, value: newCellValue);
+
+    ///change value in data
+    print(cells.first.value);
+
+    // dataGridRows[].category[] = newCellValue as int; //TODO: change value in object
+  }
 
   @override
   Future<bool> canSubmitCell(DataGridRow dataGridRow, RowColumnIndex rowColumnIndex, GridColumn column) async {
@@ -209,4 +203,6 @@ class SFDataSource extends DataGridSource {
   RegExp _getRegExp(bool isNumericKeyBoard, String columnName) {
     return isNumericKeyBoard ? RegExp('[0-9]') : RegExp('[a-zA-Z ]');
   }
+
+  void updateDataGridSource() => notifyListeners();
 }
