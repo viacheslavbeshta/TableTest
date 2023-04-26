@@ -242,6 +242,7 @@ class MyHomePageState extends State<MyHomePage> {
                     print(details.kind);
                     //rows == widgets
                   },
+
                   // onCellDoubleTap: (DataGridCellDoubleTapDetails details){//TODO: remove row from datasource
                   //   print(details.rowColumnIndex.rowIndex);
                   //   employeeDataSource.dataGridRows.removeAt(details.rowColumnIndex.rowIndex);

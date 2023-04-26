@@ -8,11 +8,11 @@ import '../widgets/cell_widgets.dart';
 import '../data/employee.dart';
 
 class SFDataSource extends DataGridSource {
-  SFDataSource(this._categoriesData);
+  SFDataSource(this._tableData);
 
-  final TableData _categoriesData;
+  final TableData _tableData;
 
-  late final dataGridRows = _categoriesData.categories;
+  late final categoriesList = _tableData.categories;
 
   /// Helps to hold the new value of all editable widget.
   /// Based on the new value we will commit the new value into the corresponding
@@ -49,7 +49,7 @@ class SFDataSource extends DataGridSource {
         // if (hiddenSubcategories.contains('${sub.category} ${category.id}${sub.id}'))
         //   continue; //TODO: remove subcategories feature 1
 
-        var cells = [
+        var subcategoryCells = [
           DataGridCell<String>(columnName: 'category', value: '${sub.category} ${category.id}${sub.id}'),
           DataGridCell<int>(columnName: jbKey, value: sub.yearData[0].budget),
           DataGridCell<int>(columnName: jaKey, value: sub.yearData[0].actual),
@@ -63,14 +63,14 @@ class SFDataSource extends DataGridSource {
           DataGridCell<int>(columnName: 'YEAR', value: category.yearData.first.diff),
           DataGridCell<int>(columnName: '%', value: category.yearData.first.diff ~/ 100),
         ];
-        dataGridRows.add(DataGridRow(cells: cells));
+        dataGridRows.add(DataGridRow(cells: subcategoryCells));
       }
     }
     return dataGridRows;
   }
 
   @override
-  List<DataGridRow> get rows => getDataGridRows(dataGridRows);
+  List<DataGridRow> get rows => getDataGridRows(categoriesList);
 
   ///func for building row (set widget for cell)
   @override
@@ -98,11 +98,14 @@ class SFDataSource extends DataGridSource {
         continue;
       }
       if (dataGridCell.columnName == 'category') {
-        cells.add(CategoryCell(
-          value: dataGridCell.value.toString(),
-          onDoubleTap: () {//TODO: remove subcategories feature 2
-             },
-        ));
+        cells.add(
+          CategoryCell(
+            value: dataGridCell.value.toString(),
+            onDoubleTap: () {
+              //TODO: remove subcategories feature 2
+            },
+          ),
+        );
         continue;
       }
       cells.add(PreviewCell(value: dataGridCell.value.toString()));
@@ -111,21 +114,26 @@ class SFDataSource extends DataGridSource {
     return DataGridRowAdapter(cells: cells);
   }
 
+  //
   @override
   Future<void> onCellSubmit(DataGridRow dataGridRow, RowColumnIndex rowColumnIndex, GridColumn column) async {
-    var gridRows = getDataGridRows(dataGridRows);
+    var gridRows = getDataGridRows(categoriesList);
     final cells = dataGridRow.getCells();
 
-
+    ///find the old cell value from row
     final dynamic oldValue =
         cells.firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == column.columnName)?.value ??
             '';
+
     print('old value: $oldValue');
     // print('dataGridRow: ${dataGridRow.getCells().toString()}');
 
-    // final int dataRowIndex = gridRows.indexOf(dataGridRow);
-    // print(dataRowIndex);
-    // //TODO: index not found
+    print('rowIndex: ${rowColumnIndex.rowIndex}, columnIndex: ${rowColumnIndex.columnIndex}');
+    ///find row index from getDataGridRows or rows
+    print('row contains in rows: ${rows.contains(dataGridRow)}');
+    final int dataRowIndex = rows.indexOf(dataGridRow);
+    print(dataRowIndex);
+    //TODO: index not found
 
     if (newCellValue == null || oldValue == newCellValue) {
       return Future<void>.value();
@@ -135,9 +143,8 @@ class SFDataSource extends DataGridSource {
     gridRows[rowColumnIndex.rowIndex].getCells()[rowColumnIndex.columnIndex] =
         DataGridCell<int>(columnName: column.columnName, value: newCellValue);
 
-    ///change value in data
     print(cells.first.value);
-
+    /// Save the new cell value to model collection also.
     // dataGridRows[].category[] = newCellValue as int; //TODO: change value in object
   }
 
