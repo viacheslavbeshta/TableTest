@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import 'package:tabletest/business_logic/vlorish_datagridcell.dart';
 import 'package:tabletest/widgets/table_layout.dart';
 
 import '../widgets/cell_widgets.dart';
@@ -52,7 +53,7 @@ class SFDataSource extends DataGridSource {
         //   continue; //TODO: remove subcategories feature 1
 
         var subcategoryCells = [
-          DataGridCell<String>(columnName: 'category', value: '${sub.category} ${category.id}${sub.id}'),
+          DataGridCell<String>(columnName: 'category', value: sub.category),
           DataGridCell<int>(columnName: jbKey, value: sub.yearData[0].budget),
           DataGridCell<int>(columnName: jaKey, value: sub.yearData[0].actual),
           DataGridCell<int>(columnName: jdKey, value: sub.yearData[0].diff),
@@ -74,10 +75,11 @@ class SFDataSource extends DataGridSource {
   @override
   List<DataGridRow> get rows => dataGridRows;
 
-  void updateTable(List<DataGridRow> categoriesGridRows){
+  void updateTable() {
     dataGridRows = getDataGridRows(categoriesList);
     updateDataGridSource();
   }
+
   ///func for building row (set widget for cell)
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
@@ -97,7 +99,7 @@ class SFDataSource extends DataGridSource {
               } else {
                 unexpadedCategories.add(list.first.value.toString());
               }
-              updateDataGridSource();
+              updateTable();
             },
           ),
         );
@@ -126,11 +128,11 @@ class SFDataSource extends DataGridSource {
     final cells = dataGridRow.getCells();
 
     ///find the old cell value from row
-    final dynamic oldValue =
+    final dynamic oldCellValue =
         cells.firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == column.columnName)?.value ??
             '';
 
-    print('old value: $oldValue');
+    print('old value: $oldCellValue');
     // print('dataGridRow: ${dataGridRow.getCells().toString()}');
 
     print('rowIndex: ${rowColumnIndex.rowIndex}, columnIndex: ${rowColumnIndex.columnIndex}');
@@ -141,7 +143,7 @@ class SFDataSource extends DataGridSource {
     print(dataRowIndex);
     //TODO: index not found
 
-    if (newCellValue == null || oldValue == newCellValue) {
+    if (newCellValue == null || oldCellValue == newCellValue) {
       return Future<void>.value();
     }
 
@@ -152,6 +154,9 @@ class SFDataSource extends DataGridSource {
     print(cells.first.value);
 
     /// Save the new cell value to model collection also.
+    ///
+
+    // categoriesList = newCellValue as int;
     // dataGridRows[].category[] = newCellValue as int; //TODO: change value in object
   }
 

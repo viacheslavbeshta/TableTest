@@ -19,7 +19,6 @@ const maKey = 'marchActual';
 const mdKey = 'marchDifference';
 
 class MyHomePage extends StatefulWidget {
-
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
@@ -242,7 +241,6 @@ class MyHomePageState extends State<MyHomePage> {
                     print(details.kind);
                     //rows == widgets
                   },
-
                   // onCellDoubleTap: (DataGridCellDoubleTapDetails details){//TODO: remove row from datasource
                   //   print(details.rowColumnIndex.rowIndex);
                   //   employeeDataSource.dataGridRows.removeAt(details.rowColumnIndex.rowIndex);
@@ -259,18 +257,37 @@ class MyHomePageState extends State<MyHomePage> {
 
   //
   TableData getEmployeeData() {
-    var monthData = MonthData(10000, 30000, 20000);
-    List<MonthData> months = List.filled(12, monthData);
-    List<Category> categories = [];
+    const categoriesCount = 5;
+    const subcategoryCount = 5;
+    const monthCount = 12;
 
-    for (var i = 0; i < 5; i++) {
-      categories.add(Category(
-        months,
-        'Category $i',
-        i.toString(),
-        List.filled(10, SubCategory(months, 'subcategory', i.toString())),
-      ));
-    }
+    List<Category> categories = List.generate(
+        categoriesCount,
+        (categoryIndex) => Category(
+            yearData: List.generate(
+                monthCount,
+                (monthIndex) =>
+                    MonthData(10000, 30000, 10000, categoryIndex.toString(), 0.toString(), monthIndex.toString())),
+            category: 'Category $categoryIndex',
+            id: categoryIndex.toString(),
+            subCategories: List.generate(
+                subcategoryCount,
+                (subcategoryIndex) => SubCategory(
+                      yearData: List.generate(
+                        monthCount,
+                        (monthIndex) => MonthData(
+                          10000,
+                          30000,
+                          10000,
+                          categoryIndex.toString(),
+                          subcategoryIndex.toString(),
+                          monthIndex.toString(),
+                        ),
+                      ),
+                      category: 'subcategory $subcategoryIndex',
+                      categoryId: categoryIndex.toString(),
+                      id: subcategoryIndex.toString(),
+                    ))));
 
     return TableData(categories);
   }

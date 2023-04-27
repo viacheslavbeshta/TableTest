@@ -5,11 +5,16 @@ class MonthData {
   final int budget;
   final int actual;
   final int diff;
+  final String categoryId;
+  final String subcategoryId;
+final String id;
 
   MonthData(
     this.budget,
     this.actual,
     this.diff,
+    this.categoryId,
+    this.subcategoryId, this.id,
   );
 }
 
@@ -18,20 +23,24 @@ class RegularRow {
   final String category;
   final String id;
 
-  const RegularRow(this.yearData, this.category, this.id);
+  const RegularRow({required this.yearData, required this.category, required this.id});
 }
 
 class SubCategory extends RegularRow {
-  SubCategory(super.yearData, super.category, super.id);
+  SubCategory({required super.yearData, required super.category, required super.id, required this.categoryId});
+
+  ///[id] is id of subcategory
+  ///[categoryId] is id of parent category
+  final String categoryId;
 }
 
 class Category extends RegularRow {
-  const Category(super.yearData, super.category, super.id, this.subCategories);
+  const Category({required super.yearData,required super.category,required super.id,required this.subCategories});
 
   final List<SubCategory> subCategories;
 
-    /// columnName: |        jbKey       |     jaKey         | ...
-    /// value:      | yearData[0].budget | yearData[0].actual|...
+  /// columnName: |        jbKey       |     jaKey         | ...
+  /// value:      | yearData[0].budget | yearData[0].actual|...
 
   // DataGridRow getDataGridRow() => DataGridRow(cells: [
   //       DataGridCell<String>(columnName: 'category', value: id),
