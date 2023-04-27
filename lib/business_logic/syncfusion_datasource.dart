@@ -12,19 +12,21 @@ class SFDataSource extends DataGridSource {
 
   final TableData _tableData;
 
-  late final categoriesList = _tableData.categories;
+  late List<Category> categoriesList = _tableData.categories;
 
   /// Helps to hold the new value of all editable widget.
   /// Based on the new value we will commit the new value into the corresponding
   /// [DataGridCell] on [onSubmitCell] method.
   dynamic newCellValue;
 
+  late List<DataGridRow> dataGridRows = getDataGridRows(categoriesList);
+
   /// Help to control the editable text in [TextField] widget.
   TextEditingController editingController = TextEditingController();
   List<String> unexpadedCategories = [];
 
   List<DataGridRow> getDataGridRows(List<Category> categories) {
-    List<DataGridRow> dataGridRows = [];
+    List<DataGridRow> categoriesDataGridRows = [];
 
     for (var category in categories) {
       List<DataGridCell> categoryCells = [
@@ -42,7 +44,7 @@ class SFDataSource extends DataGridSource {
         DataGridCell<int>(columnName: '%', value: category.yearData.first.diff ~/ 100),
       ];
 
-      dataGridRows.add(DataGridRow(cells: categoryCells));
+      categoriesDataGridRows.add(DataGridRow(cells: categoryCells));
       if (unexpadedCategories.contains('CATEGORY ${category.id}')) continue;
 
       for (var sub in category.subCategories) {
@@ -63,15 +65,19 @@ class SFDataSource extends DataGridSource {
           DataGridCell<int>(columnName: 'YEAR', value: category.yearData.first.diff),
           DataGridCell<int>(columnName: '%', value: category.yearData.first.diff ~/ 100),
         ];
-        dataGridRows.add(DataGridRow(cells: subcategoryCells));
+        categoriesDataGridRows.add(DataGridRow(cells: subcategoryCells));
       }
     }
-    return dataGridRows;
+    return categoriesDataGridRows;
   }
 
   @override
-  List<DataGridRow> get rows => getDataGridRows(categoriesList);
+  List<DataGridRow> get rows => dataGridRows;
 
+  void updateTable(List<DataGridRow> categoriesGridRows){
+    dataGridRows = getDataGridRows(categoriesList);
+    updateDataGridSource();
+  }
   ///func for building row (set widget for cell)
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
@@ -117,7 +123,6 @@ class SFDataSource extends DataGridSource {
   //
   @override
   Future<void> onCellSubmit(DataGridRow dataGridRow, RowColumnIndex rowColumnIndex, GridColumn column) async {
-    var gridRows = getDataGridRows(categoriesList);
     final cells = dataGridRow.getCells();
 
     ///find the old cell value from row
@@ -129,9 +134,10 @@ class SFDataSource extends DataGridSource {
     // print('dataGridRow: ${dataGridRow.getCells().toString()}');
 
     print('rowIndex: ${rowColumnIndex.rowIndex}, columnIndex: ${rowColumnIndex.columnIndex}');
+
     ///find row index from getDataGridRows or rows
     print('row contains in rows: ${rows.contains(dataGridRow)}');
-    final int dataRowIndex = rows.indexOf(dataGridRow);
+    final int dataRowIndex = dataGridRows.indexOf(dataGridRow);
     print(dataRowIndex);
     //TODO: index not found
 
@@ -140,10 +146,11 @@ class SFDataSource extends DataGridSource {
     }
 
     /// change value in cell
-    gridRows[rowColumnIndex.rowIndex].getCells()[rowColumnIndex.columnIndex] =
+    dataGridRows[rowColumnIndex.rowIndex].getCells()[rowColumnIndex.columnIndex] =
         DataGridCell<int>(columnName: column.columnName, value: newCellValue);
 
     print(cells.first.value);
+
     /// Save the new cell value to model collection also.
     // dataGridRows[].category[] = newCellValue as int; //TODO: change value in object
   }
