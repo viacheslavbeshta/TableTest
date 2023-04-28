@@ -30,19 +30,79 @@ class SFDataSource extends DataGridSource {
     List<DataGridRow> categoriesDataGridRows = [];
 
     for (var category in categories) {
-      List<DataGridCell> categoryCells = [
-        DataGridCell<String>(columnName: 'category', value: 'CATEGORY ${category.id}'),
-        DataGridCell<int>(columnName: jbKey, value: category.yearData[0].budget),
-        DataGridCell<int>(columnName: jaKey, value: category.yearData[0].actual),
-        DataGridCell<int>(columnName: jdKey, value: category.yearData[0].diff),
-        DataGridCell<int>(columnName: fbKey, value: category.yearData[1].budget),
-        DataGridCell<int>(columnName: faKey, value: category.yearData[1].actual),
-        DataGridCell<int>(columnName: fdKey, value: category.yearData[1].diff),
-        DataGridCell<int>(columnName: mbKey, value: category.yearData[2].budget),
-        DataGridCell<int>(columnName: maKey, value: category.yearData[2].actual),
-        DataGridCell<int>(columnName: mdKey, value: category.yearData[2].diff),
-        DataGridCell<int>(columnName: 'YEAR', value: category.yearData.first.diff),
-        DataGridCell<int>(columnName: '%', value: category.yearData.first.diff ~/ 100),
+      List<VlorishDataGridCell> categoryCells = [
+        VlorishDataGridCell<String>(
+            columnName: 'category',
+            value: 'CATEGORY ${category.id}',
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: '0'),
+        VlorishDataGridCell<int>(
+            columnName: jbKey,
+            value: category.yearData[0].budget,
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: '0'),
+        VlorishDataGridCell<int>(
+            columnName: jaKey,
+            value: category.yearData[0].actual,
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: '0'),
+        VlorishDataGridCell<int>(
+            columnName: jdKey,
+            value: category.yearData[0].diff,
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: '0'),
+        VlorishDataGridCell<int>(
+            columnName: fbKey,
+            value: category.yearData[1].budget,
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: '1'),
+        VlorishDataGridCell<int>(
+            columnName: faKey,
+            value: category.yearData[1].actual,
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: '1'),
+        VlorishDataGridCell<int>(
+            columnName: fdKey,
+            value: category.yearData[1].diff,
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: '1'),
+        VlorishDataGridCell<int>(
+            columnName: mbKey,
+            value: category.yearData[2].budget,
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: '2'),
+        VlorishDataGridCell<int>(
+            columnName: maKey,
+            value: category.yearData[2].actual,
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: '2'),
+        VlorishDataGridCell<int>(
+            columnName: mdKey,
+            value: category.yearData[2].diff,
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: '2'),
+        VlorishDataGridCell<int>(
+            columnName: 'YEAR',
+            value: category.yearData.first.diff,
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: 'year'),
+        VlorishDataGridCell<int>(
+            columnName: '%',
+            value: category.yearData.first.diff ~/ 100,
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: '%'),
       ];
 
       categoriesDataGridRows.add(DataGridRow(cells: categoryCells));
@@ -53,18 +113,74 @@ class SFDataSource extends DataGridSource {
         //   continue; //TODO: remove subcategories feature 1
 
         var subcategoryCells = [
-          DataGridCell<String>(columnName: 'category', value: sub.category),
-          DataGridCell<int>(columnName: jbKey, value: sub.yearData[0].budget),
-          DataGridCell<int>(columnName: jaKey, value: sub.yearData[0].actual),
-          DataGridCell<int>(columnName: jdKey, value: sub.yearData[0].diff),
-          DataGridCell<int>(columnName: fbKey, value: sub.yearData[1].budget),
-          DataGridCell<int>(columnName: faKey, value: sub.yearData[1].actual),
-          DataGridCell<int>(columnName: fdKey, value: sub.yearData[1].diff),
-          DataGridCell<int>(columnName: mbKey, value: sub.yearData[2].budget),
-          DataGridCell<int>(columnName: maKey, value: sub.yearData[2].actual),
-          DataGridCell<int>(columnName: mdKey, value: sub.yearData[2].diff),
-          DataGridCell<int>(columnName: 'YEAR', value: category.yearData.first.diff),
-          DataGridCell<int>(columnName: '%', value: category.yearData.first.diff ~/ 100),
+          VlorishDataGridCell<String>(
+              columnName: 'category', value: sub.category, categoryId: category.id, subcategoryId: sub.id, monthId: ''),
+          VlorishDataGridCell<int>(
+              columnName: jbKey,
+              value: sub.yearData[0].budget,
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: '0'),
+          VlorishDataGridCell<int>(
+              columnName: jaKey,
+              value: sub.yearData[0].actual,
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: '0'),
+          VlorishDataGridCell<int>(
+              columnName: jdKey,
+              value: sub.yearData[0].diff,
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: '0'),
+          VlorishDataGridCell<int>(
+              columnName: fbKey,
+              value: sub.yearData[1].budget,
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: '1'),
+          VlorishDataGridCell<int>(
+              columnName: faKey,
+              value: sub.yearData[1].actual,
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: '1'),
+          VlorishDataGridCell<int>(
+              columnName: fdKey,
+              value: sub.yearData[1].diff,
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: '1'),
+          VlorishDataGridCell<int>(
+              columnName: mbKey,
+              value: sub.yearData[2].budget,
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: '2'),
+          VlorishDataGridCell<int>(
+              columnName: maKey,
+              value: sub.yearData[2].actual,
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: '2'),
+          VlorishDataGridCell<int>(
+              columnName: mdKey,
+              value: sub.yearData[2].diff,
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: '2'),
+          VlorishDataGridCell<int>(
+              columnName: 'YEAR',
+              value: category.yearData.first.diff,
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: 'YEAR'),
+          VlorishDataGridCell<int>(
+              columnName: '%',
+              value: category.yearData.first.diff ~/ 100,
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: '%'),
         ];
         categoriesDataGridRows.add(DataGridRow(cells: subcategoryCells));
       }
@@ -147,17 +263,32 @@ class SFDataSource extends DataGridSource {
       return Future<void>.value();
     }
 
-    /// change value in cell
-    dataGridRows[rowColumnIndex.rowIndex].getCells()[rowColumnIndex.columnIndex] =
-        DataGridCell<int>(columnName: column.columnName, value: newCellValue);
+    var editCell = dataGridRows[rowColumnIndex.rowIndex].getCells()[rowColumnIndex.columnIndex];
+    print(editCell.runtimeType);
 
-    print(cells.first.value);
+    /// change value in cell
+    //>>
+    dataGridRows[rowColumnIndex.rowIndex].getCells()[rowColumnIndex.columnIndex] =
+        (editCell as VlorishDataGridCell).copyWith(newCellValue as int);
+
+    const actualWord = "Actual";
 
     /// Save the new cell value to model collection also.
-    ///
 
-    // categoriesList = newCellValue as int;
-    // dataGridRows[].category[] = newCellValue as int; //TODO: change value in object
+    var isActualColumn = editCell.columnName.contains(actualWord);
+
+    var cellInData = categoriesList
+        .firstWhere((category) => category.id == editCell.categoryId)
+        .subCategories
+        .firstWhere((subcategory) => subcategory.id == editCell.subcategoryId)
+        .yearData
+        .firstWhere((month) => month.id == editCell.monthId);
+    print(cellInData.toString());
+
+    if (isActualColumn) {
+      cellInData = cellInData.copyWith(newActual: newCellValue);
+    }
+    print('after ${cellInData.toString()}'); //TODO: change value in object
   }
 
   @override

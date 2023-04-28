@@ -1,6 +1,6 @@
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-class VlorishDataGridCell extends DataGridCell {
+class VlorishDataGridCell<T> extends DataGridCell<T> {
   VlorishDataGridCell({
     required super.columnName,
     required super.value,
@@ -13,4 +13,17 @@ class VlorishDataGridCell extends DataGridCell {
   final String subcategoryId;
   final String monthId;
 
+  VlorishDataGridCell copyWith(T newValue) {
+    return VlorishDataGridCell<T>(
+        columnName: columnName,
+        value: newValue,
+        categoryId: categoryId,
+        subcategoryId: subcategoryId,
+        monthId: monthId);
+  }
+
+  @override
+  String toString() {
+    return 'VlorishDataGridCell{categoryId: $categoryId, subcategoryId: $subcategoryId, monthId: $monthId, columnName: $columnName, value: $value}';
+  }
 }

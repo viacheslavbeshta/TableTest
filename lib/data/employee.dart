@@ -7,15 +7,25 @@ class MonthData {
   final int diff;
   final String categoryId;
   final String subcategoryId;
-final String id;
+  final String id;
 
   MonthData(
     this.budget,
     this.actual,
     this.diff,
     this.categoryId,
-    this.subcategoryId, this.id,
+    this.subcategoryId,
+    this.id,
   );
+
+  @override
+  String toString() {
+    return 'MonthData{budget: $budget, actual: $actual, diff: $diff, categoryId: $categoryId, subcategoryId: $subcategoryId, id: $id}';
+  }
+
+  MonthData copyWith({int? newActual, int? newBudget, int? newDiff}) {
+    return MonthData(newBudget ?? budget, newActual ?? actual, newDiff ?? diff, categoryId, subcategoryId, id);
+  }
 }
 
 class RegularRow {
@@ -35,7 +45,7 @@ class SubCategory extends RegularRow {
 }
 
 class Category extends RegularRow {
-  const Category({required super.yearData,required super.category,required super.id,required this.subCategories});
+  const Category({required super.yearData, required super.category, required super.id, required this.subCategories});
 
   final List<SubCategory> subCategories;
 
@@ -62,4 +72,6 @@ class TableData {
   final List<Category> categories;
 
   TableData(this.categories);
+
+
 }
