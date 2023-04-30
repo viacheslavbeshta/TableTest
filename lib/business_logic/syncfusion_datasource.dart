@@ -226,6 +226,11 @@ class SFDataSource extends DataGridSource {
           CategoryCell(
             value: dataGridCell.value.toString(),
             onDoubleTap: () {
+              print(dataGridCell.columnName);
+              (dataGridCell as VlorishDataGridCell);
+              categoriesList[int.parse((dataGridCell).categoryId)]
+                  .subCategories
+                  .removeWhere((element) => element.id == dataGridCell.subcategoryId);
               //TODO: remove subcategories feature 2
             },
           ),
@@ -267,15 +272,16 @@ class SFDataSource extends DataGridSource {
     print(editCell.runtimeType);
 
     /// change value in cell
-    //>>
     dataGridRows[rowColumnIndex.rowIndex].getCells()[rowColumnIndex.columnIndex] =
         (editCell as VlorishDataGridCell).copyWith(newCellValue as int);
 
     const actualWord = "Actual";
-
-    /// Save the new cell value to model collection also.
+    const budgetWord = "Budget";
+    const diffWord = "Difference";
 
     var isActualColumn = editCell.columnName.contains(actualWord);
+    var isBudgetColumn = editCell.columnName.contains(budgetWord);
+    var isDifferenceColumn = editCell.columnName.contains(diffWord);
 
     var cellInData = categoriesList
         .firstWhere((category) => category.id == editCell.categoryId)
@@ -283,12 +289,39 @@ class SFDataSource extends DataGridSource {
         .firstWhere((subcategory) => subcategory.id == editCell.subcategoryId)
         .yearData
         .firstWhere((month) => month.id == editCell.monthId);
-    print(cellInData.toString());
 
+    var catIndex = categoriesList.indexOf(categoriesList.firstWhere((category) => category.id == editCell.categoryId));
+
+    var subCatIndex = categoriesList[catIndex].subCategories.indexOf(
+        categoriesList[catIndex].subCategories.firstWhere((subcategory) => subcategory.id == editCell.subcategoryId));
+
+    var monthIndex = categoriesList[catIndex].subCategories[subCatIndex].yearData.indexOf(cellInData);
+
+    print(cellInData.toString());
+    print('catIndex: $catIndex');
+    print('subCatIndex: $subCatIndex');
+    print('monthIndex: $monthIndex');
+
+    /// Save the new cell value to model collection also.
     if (isActualColumn) {
       cellInData = cellInData.copyWith(newActual: newCellValue);
+      categoriesList[catIndex].subCategories[subCatIndex].yearData[monthIndex] = categoriesList[subCatIndex]
+          .subCategories[subCatIndex]
+          .yearData[catIndex]
+          .copyWith(newActual: newCellValue as int);
     }
-    print('after ${cellInData.toString()}'); //TODO: change value in object
+    if (isBudgetColumn) {
+      categoriesList[catIndex].subCategories[subCatIndex].yearData[monthIndex] = categoriesList[subCatIndex]
+          .subCategories[subCatIndex]
+          .yearData[catIndex]
+          .copyWith(newBudget: newCellValue as int);
+    }
+    if (isDifferenceColumn) {
+      categoriesList[catIndex].subCategories[subCatIndex].yearData[monthIndex] = categoriesList[subCatIndex]
+          .subCategories[subCatIndex]
+          .yearData[catIndex]
+          .copyWith(newDiff: newCellValue as int);
+    }
   }
 
   @override

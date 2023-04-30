@@ -10,7 +10,7 @@ class CategoryCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onDoubleTap: () => onDoubleTap,
+      onDoubleTap: () => onDoubleTap.call(),
       child: Container(
           color: Colors.white70,
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
