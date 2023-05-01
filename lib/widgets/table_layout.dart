@@ -18,6 +18,10 @@ const mbKey = 'marchBudget';
 const maKey = 'marchActual';
 const mdKey = 'marchDifference';
 
+const ybKey = 'yearlyBudget';
+const yaKey = 'yearlyActual';
+const ydKey = 'yearlyDifference';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
@@ -113,6 +117,15 @@ class MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                       ),
+                      StackedHeaderCell(
+                        columnNames: [ybKey, yaKey, ydKey],
+                        child: Container(
+                          color: const Color(0xFFF1F1F1),
+                          child: const Center(
+                            child: Text('YEARLY'),
+                          ),
+                        ),
+                      ),
                     ])
                   ],
                   columns: <GridColumn>[
@@ -123,7 +136,7 @@ class MyHomePageState extends State<MyHomePage> {
                         padding: const EdgeInsets.all(16.0),
                         alignment: Alignment.center,
                         child: const Text(
-                          'CATEGORY',
+                          'CATEGORY'
                         ),
                       ),
                     ),
@@ -218,11 +231,36 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                     GridColumn(
-                      columnName: 'YEAR',
+                      allowEditing: false,
+                      columnName: ybKey,
+                      visible: showBudget,
                       label: Container(
+                        color: Colors.amberAccent,
                         padding: const EdgeInsets.all(8.0),
                         alignment: Alignment.center,
-                        child: const Text('YEAR'),
+                        child: const Text('BUDGET'),
+                      ),
+                    ),
+                    GridColumn(
+                      allowEditing: false,
+                      columnName: yaKey,
+                      visible: showActual,
+                      label: Container(
+                        color: Colors.lightBlue,
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text('ACTUAL'),
+                      ),
+                    ),
+                    GridColumn(
+                      allowEditing: false,
+                      columnName: ydKey,
+                      visible: showDiff,
+                      label: Container(
+                        color: Colors.green,
+                        padding: const EdgeInsets.all(8.0),
+                        alignment: Alignment.center,
+                        child: const Text('DIFFERENCE'),
                       ),
                     ),
                     GridColumn(
@@ -257,9 +295,14 @@ class MyHomePageState extends State<MyHomePage> {
 
   //
   TableData getEmployeeData() {
+
     const categoriesCount = 5;
     const subcategoryCount = 5;
     const monthCount = 12;
+
+    const budget = 30;
+    const actual = 20;
+    const diff = 10;
 
     List<Category> categories = List.generate(
         categoriesCount,
@@ -267,7 +310,7 @@ class MyHomePageState extends State<MyHomePage> {
             yearData: List.generate(
                 monthCount,
                 (monthIndex) =>
-                    MonthData(10000, 30000, 10000, categoryIndex.toString(), 0.toString(), monthIndex.toString())),
+                    MonthData(budget, actual, diff, categoryIndex.toString(), 0.toString(), monthIndex.toString())),
             category: 'Category $categoryIndex',
             id: categoryIndex.toString(),
             subCategories: List.generate(
@@ -276,9 +319,9 @@ class MyHomePageState extends State<MyHomePage> {
                       yearData: List.generate(
                         monthCount,
                         (monthIndex) => MonthData(
-                          10000,
-                          30000,
-                          10000,
+                          budget,
+                          actual,
+                          diff,
                           categoryIndex.toString(),
                           subcategoryIndex.toString(),
                           monthIndex.toString(),

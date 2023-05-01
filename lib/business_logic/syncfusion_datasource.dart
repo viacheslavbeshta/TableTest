@@ -92,8 +92,20 @@ class SFDataSource extends DataGridSource {
             subcategoryId: '',
             monthId: '2'),
         VlorishDataGridCell<int>(
-            columnName: 'YEAR',
-            value: category.yearData.first.diff,
+            columnName: ybKey,
+            value: category.rowBudgetSum(),
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: 'year'),
+        VlorishDataGridCell<int>(
+            columnName: yaKey,
+            value: category.rowActualSum(),
+            categoryId: category.id,
+            subcategoryId: '',
+            monthId: 'year'),
+        VlorishDataGridCell<int>(
+            columnName: ydKey,
+            value: category.rowDiffSum(),
             categoryId: category.id,
             subcategoryId: '',
             monthId: 'year'),
@@ -109,8 +121,6 @@ class SFDataSource extends DataGridSource {
       if (unexpadedCategories.contains('CATEGORY ${category.id}')) continue;
 
       for (var sub in category.subCategories) {
-        // if (hiddenSubcategories.contains('${sub.category} ${category.id}${sub.id}'))
-        //   continue; //TODO: remove subcategories feature 1
 
         var subcategoryCells = [
           VlorishDataGridCell<String>(
@@ -170,11 +180,23 @@ class SFDataSource extends DataGridSource {
               subcategoryId: sub.id,
               monthId: '2'),
           VlorishDataGridCell<int>(
-              columnName: 'YEAR',
-              value: category.yearData.first.diff,
+              columnName: ybKey,
+              value: sub.rowBudgetSum(),
               categoryId: category.id,
               subcategoryId: sub.id,
-              monthId: 'YEAR'),
+              monthId: 'year'),
+          VlorishDataGridCell<int>(
+              columnName: yaKey,
+              value: sub.rowActualSum(),
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: 'year'),
+          VlorishDataGridCell<int>(
+              columnName: ydKey,
+              value: sub.rowDiffSum(),
+              categoryId: category.id,
+              subcategoryId: sub.id,
+              monthId: 'year'),
           VlorishDataGridCell<int>(
               columnName: '%',
               value: category.yearData.first.diff ~/ 100,
@@ -199,6 +221,7 @@ class SFDataSource extends DataGridSource {
   ///func for building row (set widget for cell)
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
+    print('buildRow');
     final cells = <Widget>[];
     final list = row.getCells();
 
@@ -226,17 +249,10 @@ class SFDataSource extends DataGridSource {
           CategoryCell(
             value: dataGridCell.value.toString(),
             onDoubleTap: () {
-              print(dataGridCell.columnName);
-              (dataGridCell as VlorishDataGridCell);
-              print('categoryId: ${dataGridCell.categoryId}');
-              print('subcategoryId: ${dataGridCell.subcategoryId}');
-
-              categoriesList[int.parse((dataGridCell).categoryId)]
+              categoriesList[int.parse((dataGridCell as VlorishDataGridCell).categoryId)]
                   .subCategories
-                  .removeWhere((subcategory)=>dataGridCell.subcategoryId==subcategory.id);
-              //TODO: remove subcategories feature 2
+                  .removeWhere((subcategory) => dataGridCell.subcategoryId == subcategory.id);
               updateTable();
-              print('------------------------------');
             },
           ),
         );
@@ -385,6 +401,27 @@ class SFDataSource extends DataGridSource {
           submitCell();
         },
       ),
+    );
+  }
+
+
+  // @override
+  // String calculateSummaryValue(
+  //     GridTableSummaryRow summaryRow, GridSummaryColumn? summaryColumn, RowColumnIndex rowColumnIndex) {
+  //   return '';
+  // }
+
+  @override
+  Widget? buildTableSummaryCellWidget(GridTableSummaryRow summaryRow, GridSummaryColumn? summaryColumn,
+      RowColumnIndex rowColumnIndex, String summaryValue) {
+    print(summaryRow.position.name);
+    print(summaryColumn?.name);
+    print(rowColumnIndex.columnIndex);
+    print(rowColumnIndex.rowIndex);
+    print(summaryValue);
+    return Container(
+      padding: EdgeInsets.all(15.0),
+      child: Text(summaryValue),
     );
   }
 

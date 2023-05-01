@@ -31,6 +31,30 @@ class RegularRow {
   final String id;
 
   const RegularRow({required this.yearData, required this.category, required this.id});
+
+  int rowActualSum() {
+    var actualYearSum = 0;
+    for (var month in yearData) {
+      actualYearSum += month.actual;
+    }
+    return actualYearSum;
+  }
+
+  int rowBudgetSum() {
+    var budgetYearSum = 0;
+    for (var month in yearData) {
+      budgetYearSum += month.budget;
+    }
+    return budgetYearSum;
+  }
+
+  int rowDiffSum() {
+    var diffYearSum = 0;
+    for (var month in yearData) {
+      diffYearSum += month.diff;
+    }
+    return diffYearSum;
+  }
 }
 
 class SubCategory extends RegularRow {
@@ -69,5 +93,4 @@ class TableData {
   final List<Category> categories;
 
   TableData(this.categories);
-
 }
