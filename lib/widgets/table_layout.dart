@@ -235,10 +235,10 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                   onCellTap: (DataGridCellTapDetails details) {
-                    print(details.column.columnName);
-                    print(details.column.label);
-                    print(details.rowColumnIndex);
-                    print(details.kind);
+                    // print(details.column.columnName);
+                    // print(details.column.label);
+                    // print(details.rowColumnIndex);
+                    // print(details.kind);
                     //rows == widgets
                   },
                   // onCellDoubleTap: (DataGridCellDoubleTapDetails details){//TODO: remove row from datasource

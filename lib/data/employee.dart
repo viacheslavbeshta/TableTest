@@ -1,6 +1,3 @@
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
-import 'package:tabletest/widgets/table_layout.dart';
-
 class MonthData {
   final int budget;
   final int actual;
@@ -72,6 +69,5 @@ class TableData {
   final List<Category> categories;
 
   TableData(this.categories);
-
 
 }

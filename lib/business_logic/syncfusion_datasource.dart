@@ -228,10 +228,15 @@ class SFDataSource extends DataGridSource {
             onDoubleTap: () {
               print(dataGridCell.columnName);
               (dataGridCell as VlorishDataGridCell);
+              print('categoryId: ${dataGridCell.categoryId}');
+              print('subcategoryId: ${dataGridCell.subcategoryId}');
+
               categoriesList[int.parse((dataGridCell).categoryId)]
                   .subCategories
-                  .removeWhere((element) => element.id == dataGridCell.subcategoryId);
+                  .removeWhere((subcategory)=>dataGridCell.subcategoryId==subcategory.id);
               //TODO: remove subcategories feature 2
+              updateTable();
+              print('------------------------------');
             },
           ),
         );
