@@ -306,9 +306,9 @@ class MyHomePageState extends State<MyHomePage> {
     const subcategoryCount = 5;
     const monthCount = 12;
 
-    const budget = 30;
-    const actual = 20;
-    const diff = 10;
+    const budget = 0;
+    const actual = 0;
+    const diff = 0;
 
     List<Category> categories = List.generate(
         categoriesCount,

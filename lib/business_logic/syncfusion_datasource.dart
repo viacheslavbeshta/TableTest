@@ -269,85 +269,24 @@ class SFDataSource extends DataGridSource {
     const actualWord = "Actual";
     const budgetWord = "Budget";
 
-    var editCell = dataGridRows[rowColumnIndex.rowIndex].getCells()[rowColumnIndex.columnIndex];
+    var editCell = dataGridRows[rowColumnIndex.rowIndex].getCells()[rowColumnIndex.columnIndex] as VlorishDataGridCell;
 
     var isActualColumn = editCell.columnName.contains(actualWord);
     var isBudgetColumn = editCell.columnName.contains(budgetWord);
 
-    final cells = dataGridRow.getCells();
-
     ///find the old cell value from row
-    final dynamic oldCellValue =
-        cells.firstWhereOrNull((DataGridCell dataGridCell) => dataGridCell.columnName == column.columnName)?.value ??
-            '';
+    final oldCellValue = editCell.value;
 
     if (newCellValue == null || oldCellValue == newCellValue) {
       return Future<void>.value();
     }
 
-    ///find the cell
+    changeCellValue(
+        editCell, oldCellValue, rowColumnIndex.rowIndex, rowColumnIndex.columnIndex, isActualColumn, isBudgetColumn);
 
-    /// change value in cell
-    dataGridRows[rowColumnIndex.rowIndex].getCells()[rowColumnIndex.columnIndex] =
-        (editCell as VlorishDataGridCell).copyWith(newCellValue as int);
+    changeYearlyRowData(isActualColumn, isBudgetColumn, rowColumnIndex.rowIndex, oldCellValue, newCellValue);
 
-    var yearlyBudgetColumnIndex = 10;
-    var yearlyActualColumnIndex = 11;
-    var yearlyDifferenceColumnIndex = 12;
-
-    ///update actual value in year column
-    if (isActualColumn) {
-      dataGridRows[rowColumnIndex.rowIndex].getCells()[yearlyActualColumnIndex] =
-          (dataGridRows[rowColumnIndex.rowIndex].getCells()[yearlyActualColumnIndex] as VlorishDataGridCell).copyWith(
-              dataGridRows[rowColumnIndex.rowIndex].getCells()[yearlyActualColumnIndex].value -
-                  oldCellValue +
-                  newCellValue as int);
-    }
-
-    if (isBudgetColumn) {
-      dataGridRows[rowColumnIndex.rowIndex].getCells()[yearlyBudgetColumnIndex] =
-          (dataGridRows[rowColumnIndex.rowIndex].getCells()[yearlyBudgetColumnIndex] as VlorishDataGridCell).copyWith(
-              dataGridRows[rowColumnIndex.rowIndex].getCells()[yearlyBudgetColumnIndex].value -
-                  oldCellValue +
-                  newCellValue as int);
-    }
-
-    ///update difference value in year column
-    dataGridRows[rowColumnIndex.rowIndex].getCells()[yearlyDifferenceColumnIndex] =
-        (dataGridRows[rowColumnIndex.rowIndex].getCells()[yearlyDifferenceColumnIndex] as VlorishDataGridCell).copyWith(
-            dataGridRows[rowColumnIndex.rowIndex].getCells()[yearlyBudgetColumnIndex].value -
-                dataGridRows[rowColumnIndex.rowIndex].getCells()[yearlyActualColumnIndex].value);
-
-    updateTableView();
-
-    var cellInData = categoriesList
-        .firstWhere((category) => category.id == editCell.categoryId)
-        .subCategories
-        .firstWhere((subcategory) => subcategory.id == editCell.subcategoryId)
-        .yearData
-        .firstWhere((month) => month.id == editCell.monthId);
-
-    var catIndex = categoriesList.indexOf(categoriesList.firstWhere((category) => category.id == editCell.categoryId));
-
-    var subCatIndex = categoriesList[catIndex].subCategories.indexOf(
-        categoriesList[catIndex].subCategories.firstWhere((subcategory) => subcategory.id == editCell.subcategoryId));
-
-    var monthIndex = categoriesList[catIndex].subCategories[subCatIndex].yearData.indexOf(cellInData);
-
-    /// Save the new cell value to model collection also.
-    if (isActualColumn) {
-      cellInData = cellInData.copyWith(newActual: newCellValue);
-      categoriesList[catIndex].subCategories[subCatIndex].yearData[monthIndex] = categoriesList[subCatIndex]
-          .subCategories[subCatIndex]
-          .yearData[catIndex]
-          .copyWith(newActual: newCellValue as int);
-    }
-    if (isBudgetColumn) {
-      categoriesList[catIndex].subCategories[subCatIndex].yearData[monthIndex] = categoriesList[subCatIndex]
-          .subCategories[subCatIndex]
-          .yearData[catIndex]
-          .copyWith(newBudget: newCellValue as int);
-    }
+    saveChangesToData(editCell, newCellValue, isActualColumn, isBudgetColumn);
   }
 
   @override
@@ -409,29 +348,96 @@ class SFDataSource extends DataGridSource {
     );
   }
 
-  // @override
-  // String calculateSummaryValue(
-  //     GridTableSummaryRow summaryRow, GridSummaryColumn? summaryColumn, RowColumnIndex rowColumnIndex) {
-  //   return '';
-  // }
-
-  @override
-  Widget? buildTableSummaryCellWidget(GridTableSummaryRow summaryRow, GridSummaryColumn? summaryColumn,
-      RowColumnIndex rowColumnIndex, String summaryValue) {
-    print(summaryRow.position.name);
-    print(summaryColumn?.name);
-    print(rowColumnIndex.columnIndex);
-    print(rowColumnIndex.rowIndex);
-    print(summaryValue);
-    return Container(
-      padding: EdgeInsets.all(15.0),
-      child: Text(summaryValue),
-    );
-  }
-
   RegExp _getRegExp(bool isNumericKeyBoard, String columnName) {
     return isNumericKeyBoard ? RegExp('[0-9]') : RegExp('[a-zA-Z ]');
   }
 
   void updateTableView() => notifyListeners();
+
+  Future<void> changeCellValue(VlorishDataGridCell editCell, int oldCellValue, int rowIndex, int columnIndex,
+      bool isActual, bool isBudget) async {
+    ///change value in table view
+    dataGridRows[rowIndex].getCells()[columnIndex] = editCell.copyWith(newCellValue as int);
+
+    var shiftIndexToDiffColumn = isActual ? 1 : 2;
+    var newDiffValue = isActual
+        ? dataGridRows[rowIndex].getCells()[columnIndex - 1].value -
+            dataGridRows[rowIndex].getCells()[columnIndex].value
+        : dataGridRows[rowIndex].getCells()[columnIndex].value -
+            dataGridRows[rowIndex].getCells()[columnIndex + 1].value;
+
+    dataGridRows[rowIndex].getCells()[columnIndex + shiftIndexToDiffColumn] = editCell.copyWith(newDiffValue);
+    notifyDataSourceListeners(rowColumnIndex: RowColumnIndex(rowIndex, columnIndex + shiftIndexToDiffColumn));
+  }
+
+  void changeYearlyRowData(bool isActual, bool isBudget, int rowIndex, int oldCellValue, int newCellValue) {
+    const yearlyBudgetColumnIndex = 10;
+    const yearlyActualColumnIndex = 11;
+    const yearlyDifferenceColumnIndex = 12;
+
+    ///update ACTUAL value in year column
+    if (isActual) {
+      dataGridRows[rowIndex].getCells()[yearlyActualColumnIndex] =
+          (dataGridRows[rowIndex].getCells()[yearlyActualColumnIndex] as VlorishDataGridCell)
+              .copyWith(dataGridRows[rowIndex].getCells()[yearlyActualColumnIndex].value - oldCellValue + newCellValue);
+    }
+
+    ///update BUDGET value in year column
+    if (isBudget) {
+      dataGridRows[rowIndex].getCells()[yearlyBudgetColumnIndex] =
+          (dataGridRows[rowIndex].getCells()[yearlyBudgetColumnIndex] as VlorishDataGridCell)
+              .copyWith(dataGridRows[rowIndex].getCells()[yearlyBudgetColumnIndex].value - oldCellValue + newCellValue);
+    }
+
+    ///update DIFFERENCE value in year column
+    dataGridRows[rowIndex].getCells()[yearlyDifferenceColumnIndex] =
+        (dataGridRows[rowIndex].getCells()[yearlyDifferenceColumnIndex] as VlorishDataGridCell).copyWith(
+            dataGridRows[rowIndex].getCells()[yearlyBudgetColumnIndex].value -
+                dataGridRows[rowIndex].getCells()[yearlyActualColumnIndex].value);
+
+    notifyDataSourceListeners(rowColumnIndex: RowColumnIndex(rowIndex, yearlyBudgetColumnIndex));
+    notifyDataSourceListeners(rowColumnIndex: RowColumnIndex(rowIndex, yearlyActualColumnIndex));
+    notifyDataSourceListeners(rowColumnIndex: RowColumnIndex(rowIndex, yearlyDifferenceColumnIndex));
+  }
+
+  void saveChangesToData(VlorishDataGridCell cell, dynamic newCellValue, bool isActual, bool isBudget) {
+    var cellInData = categoriesList
+        .firstWhere((category) => category.id == cell.categoryId)
+        .subCategories
+        .firstWhere((subcategory) => subcategory.id == cell.subcategoryId)
+        .yearData
+        .firstWhere((month) => month.id == cell.monthId);
+
+    //TODO: handle error state
+
+    var catIndex = categoriesList.indexOf(categoriesList.firstWhere((category) => category.id == cell.categoryId));
+
+    var subCatIndex = categoriesList[catIndex].subCategories.indexOf(
+        categoriesList[catIndex].subCategories.firstWhere((subcategory) => subcategory.id == cell.subcategoryId));
+
+    var monthIndex = categoriesList[catIndex].subCategories[subCatIndex].yearData.indexOf(cellInData);
+
+    /// Save the new cell value to model collection.
+    if (isActual) {
+      cellInData = cellInData.copyWith(newActual: newCellValue);
+      categoriesList[catIndex].subCategories[subCatIndex].yearData[monthIndex] =
+          categoriesList[subCatIndex].subCategories[subCatIndex].yearData[catIndex].copyWith(
+                newActual: newCellValue as int,
+                newDiff: cellInData.budget - newCellValue,
+              );
+    }
+    if (isBudget) {
+      categoriesList[catIndex].subCategories[subCatIndex].yearData[monthIndex] =
+          categoriesList[subCatIndex].subCategories[subCatIndex].yearData[catIndex].copyWith(
+                newBudget: newCellValue as int,
+                newDiff: newCellValue - cellInData.actual,
+              );
+    }
+  }
+
+  ///Found on https://support.syncfusion.com/kb/article/12401/how-to-update-cell-in-specific-column-based-on-other-column-cell-value-when-editing-at-run
+  @override
+  void notifyDataSourceListeners({RowColumnIndex? rowColumnIndex}) {
+    super.notifyDataSourceListeners(rowColumnIndex: rowColumnIndex);
+  }
 }
