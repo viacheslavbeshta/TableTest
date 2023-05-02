@@ -49,6 +49,9 @@ class MyHomePageState extends State<MyHomePage> {
   var showDiff = true;
   var showActual = true;
   var showBudget = false;
+
+  static const allowDifferenceEditing = false;
+
   var scroll = const ScrollPhysics();
   @override
   Widget build(BuildContext context) {
@@ -163,6 +166,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                     GridColumn(
                       visible: showDiff,
+                      allowEditing: allowDifferenceEditing,
                       columnName: jdKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
@@ -193,6 +197,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                     GridColumn(
                       visible: showDiff,
+                      allowEditing: allowDifferenceEditing,
                       columnName: fdKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
@@ -223,6 +228,7 @@ class MyHomePageState extends State<MyHomePage> {
                     ),
                     GridColumn(
                       visible: showDiff,
+                      allowEditing: allowDifferenceEditing,
                       columnName: mdKey,
                       label: Container(
                         padding: const EdgeInsets.all(8.0),
@@ -253,9 +259,9 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                     GridColumn(
-                      allowEditing: false,
                       columnName: ydKey,
                       visible: showDiff,
+                      allowEditing: allowDifferenceEditing,
                       label: Container(
                         color: Colors.green,
                         padding: const EdgeInsets.all(8.0),
